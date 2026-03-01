@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TeShaN Chat - Register</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo">TeShaN</div>
+            <h2 class="form-title">Create Account</h2>
+            
+            {% if error %}
+            <div class="error-message">{{error}}</div>
+            {% endif %}
+            
+            <form method="POST" action="/register" class="login-form">
+                <input name="username" placeholder="Choose Username" required class="login-input" minlength="3" maxlength="20" autocomplete="username">
+                <input name="email" type="email" placeholder="Email Address" required class="login-input" autocomplete="email">
+                <input name="password" type="password" placeholder="Password (min 6 chars)" required class="login-input" minlength="6" autocomplete="new-password">
+                
+                <div class="avatar-selection">
+                    <label class="avatar-label">Choose Avatar:</label>
+                    <div class="avatar-grid">
+                        <label class="avatar-option">
+                            <input type="radio" name="avatar" value="👤" checked>
+                            <span class="avatar-emoji">👤</span>
+                        </label>
+                        <label class="avatar-option">
+                            <input type="radio" name="avatar" value="😊">
+                            <span class="avatar-emoji">😊</span>
+                        </label>
+                        <label class="avatar-option">
+                            <input type="radio" name="avatar" value="🎭">
+                            <span class="avatar-emoji">🎭</span>
+                        </label>
+                        <label class="avatar-option">
+                            <input type="radio" name="avatar" value="🦄">
+                            <span class="avatar-emoji">🦄</span>
+                        </label>
+                        <label class="avatar-option">
+                            <input type="radio" name="avatar" value="🐱">
+                            <span class="avatar-emoji">🐱</span>
+                        </label>
+                        <label class="avatar-option">
+                            <input type="radio" name="avatar" value="🚀">
+                            <span class="avatar-emoji">🚀</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="login-button">Register</button>
+            </form>
+            
+            <div class="form-footer">
+                <p>Already have an account? <a href="/" class="link">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TeShaN Chat - Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo">TeShaN</div>
+            <h2 class="form-title">Welcome Back</h2>
+            
+            {% if error %}
+            <div class="error-message">{{error}}</div>
+            {% endif %}
+            
+            {% if success %}
+            <div class="success-message">{{success}}</div>
+            {% endif %}
+            
+            <form method="POST" action="/login" class="login-form" onsubmit="return validateForm()">
+                <input name="username" placeholder="Username" required class="login-input" id="username">
+                <input name="password" type="password" placeholder="Password" required class="login-input" id="password">
+                <button type="submit" class="login-button" id="loginBtn">Login</button>
+            </form>
+            
+            <div class="form-footer">
+                <p>Don't have an account? <a href="/register" class="link">Register here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function validateForm() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const loginBtn = document.getElementById('loginBtn');
+        
+        if (!username || !password) {
+            alert('Please enter both username and password');
+            return false;
+        }
+        
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Logging in...';
+        
+        return true;
+    }
+    </script>
+</body>
+</html>

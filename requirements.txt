@@ -1,0 +1,8 @@
+Flask==2.3.3
+Flask-SocketIO==5.3.6
+python-socketio==5.8.0
+python-engineio==4.7.1
+Werkzeug==2.3.7
+cryptography==41.0.4
+gunicorn==21.2.0
+eventlet==0.33.3

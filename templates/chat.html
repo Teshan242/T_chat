@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TeShaN Chat</title>
+</head>
+<body>
+<div class="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="avatar" onclick="window.location.href='/profile'" style="cursor: pointer;">
+                {% if avatar and avatar.startswith('/') %}
+                    <img src="{{avatar}}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    {{avatar or '👤'}}
+                {% endif %}
+            </div>
+            <div class="user-info">
+                <div class="user-name">{{username}}</div>
+                <div class="user-status">🟢 Online</div>
+            </div>
+            <button class="profile-btn" onclick="window.location.href='/profile'" title="Edit Profile">⚙️</button>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Search or start new chat">
+        </div>
+        
+        <!-- Rooms Section -->
+        <div class="rooms-section">
+            <div class="section-title">Rooms</div>
+            <div class="room-list" id="room-list">
+                <div class="room-item active" data-room="general">
+                    <div class="room-avatar">💬</div>
+                    <div class="room-info">
+                        <div class="room-name">General</div>
+                        <div class="room-last-message">Start chatting...</div>
+                    </div>
+                </div>
+            </div>
+            <button class="create-room-btn" onclick="showCreateRoomModal()">+ Create Room</button>
+        </div>
+        
+        <!-- Online Users -->
+        <div class="users-section">
+            <div class="section-title">Online Users (<span id="online-count">0</span>)</div>
+            <div class="chat-list" id="online-users">
+                <!-- Online users will be populated here -->
+            </div>
+        </div>
+        
+        <!-- Private Chats -->
+        <div class="private-chats-section">
+            <div class="section-title">Private Chats</div>
+            <div class="private-chat-list" id="private-chats">
+                <!-- Private chats will be populated by JavaScript -->
+            </div>
+            <button class="create-room-btn" onclick="showSearchUsers()">+ Start Private Chat</button>
+        </div>
+        
+        <!-- Search Users Modal -->
+        <div class="search-users-modal" id="search-users-modal">
+            <input type="text" id="user-search-input" placeholder="Search users..." class="search-input" style="margin: 12px;">
+            <div id="search-results"></div>
+        </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-container">
+        <div class="chat-header">
+            <button class="back-btn" onclick="toggleSidebar()">☰</button>
+            <div class="chat-header-left">
+                <div class="avatar" id="current-room-avatar">💬</div>
+                <div class="chat-header-info">
+                    <div class="chat-header-name" id="current-room-name">General</div>
+                    <div class="chat-header-status">
+                        <span id="room-users-count">0</span> members • 
+                        <span id="connection-status">🟢 Connected</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-header-actions">
+                <button class="header-btn" onclick="toggleSearch()">🔍</button>
+                <button class="header-btn" onclick="showRoomInfo()">ℹ️</button>
+                <button class="header-btn" onclick="startTutorialManually()" title="Start Tutorial">🎯</button>
+            </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div class="messages-container" id="chat">
+            <div class="welcome-message" id="welcome-message">
+                <div class="welcome-icon">💬</div>
+                <div class="welcome-text">Welcome to TeShaN Chat!</div>
+                <div class="welcome-subtitle">Select a room or start a private chat to begin messaging</div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typing"></div>
+
+        <!-- Message Input -->
+        <div class="message-input-container">
+            <div class="input-wrapper">
+                <button class="input-button" onclick="showEmojiPicker()">😊</button>
+                <input type="text" id="msg" class="message-input" placeholder="Type a message">
+                <button class="input-button" onclick="document.getElementById('file_image').click()">
+                    📎
+                </button>
+                <button class="input-button" onclick="document.getElementById('file_voice').click()">
+                    🎤
+                </button>
+            </div>
+            <button class="send-button" onclick="sendText()" id="send-btn">➤</button>
+        </div>
+    </div>
+</div>
+
+<!-- Create Room Modal -->
+<div class="modal" id="create-room-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Create New Room</h3>
+            <button class="close-btn" onclick="closeCreateRoomModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="new-room-name" placeholder="Room name" class="modal-input">
+            <label class="checkbox-label">
+                <input type="checkbox" id="private-room">
+                <span>Private room</span>
+            </label>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn cancel" onclick="closeCreateRoomModal()">Cancel</button>
+            <button class="modal-btn create" onclick="createRoom()">Create</button>
+        </div>
+    </div>
+</div>
+
+<!-- Emoji Picker -->
+<div class="emoji-picker" id="emoji-picker">
+    <div class="emoji-grid">
+        <span class="emoji-item" onclick="insertEmoji('😀')">😀</span>
+        <span class="emoji-item" onclick="insertEmoji('😂')">😂</span>
+        <span class="emoji-item" onclick="insertEmoji('❤️')">❤️</span>
+        <span class="emoji-item" onclick="insertEmoji('👍')">👍</span>
+        <span class="emoji-item" onclick="insertEmoji('🎉')">🎉</span>
+        <span class="emoji-item" onclick="insertEmoji('🔥')">🔥</span>
+        <span class="emoji-item" onclick="insertEmoji('😎')">😎</span>
+        <span class="emoji-item" onclick="insertEmoji('🤔')">🤔</span>
+        <span class="emoji-item" onclick="insertEmoji('😅')">😅</span>
+        <span class="emoji-item" onclick="insertEmoji('🙏')">🙏</span>
+        <span class="emoji-item" onclick="insertEmoji('💯')">💯</span>
+        <span class="emoji-item" onclick="insertEmoji('🚀')">🚀</span>
+    </div>
+</div>
+
+<!-- Hidden file inputs -->
+<input type="file" id="file_image" class="file-input" accept="image/*">
+<input type="file" id="file_voice" class="file-input" accept="audio/*">
+
+<!-- Hidden room input -->
+<input type="hidden" id="current-room" value="general">
+
+<script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+<script src="/static/app.js"></script>
+<script src="/static/tutorial.js"></script>
+<link rel="stylesheet" href="/static/style.css">
+<script>
+// Start tutorial on first login only
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Tutorial script loaded');
+    
+    // Wait a bit for the page to fully load
+    setTimeout(() => {
+        console.log('Checking tutorial status...');
+        
+        // Force clear tutorial for testing
+        localStorage.removeItem('tutorial_completed');
+        
+        // Check if tutorialTour is available
+        if (typeof tutorialTour !== 'undefined') {
+            console.log('TutorialTour available, starting tutorial...');
+            tutorialTour.start();
+        } else {
+            console.error('TutorialTour not available!');
+        }
+    }, 2000); // Increased delay to ensure everything loads
+});
+
+function showTutorialHelper() {
+    const helper = document.createElement('div');
+    helper.id = 'tutorial-helper';
+    helper.innerHTML = `
+        <style>
+            #tutorial-helper {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+                color: white;
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                cursor: pointer;
+                box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+                z-index: 1000;
+                transition: all 0.3s ease;
+                animation: bounceIn 0.6s ease;
+            }
+            
+            #tutorial-helper:hover {
+                transform: scale(1.1);
+                box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+            }
+            
+            @keyframes bounceIn {
+                0% {
+                    opacity: 0;
+                    transform: scale(0.3);
+                }
+                50% {
+                    opacity: 1;
+                    transform: scale(1.05);
+                }
+                70% {
+                    transform: scale(0.9);
+                }
+                100% {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+            
+            @media (max-width: 768px) {
+                #tutorial-helper {
+                    bottom: 80px;
+                    right: 16px;
+                    width: 48px;
+                    height: 48px;
+                    font-size: 20px;
+                }
+            }
+        </style>
+        <div title="Restart Tutorial">🎯</div>
+    `;
+    
+    helper.onclick = function() {
+        localStorage.removeItem('tutorial_completed');
+        window.location.reload();
+    };
+    
+    document.body.appendChild(helper);
+}
+
+// Add manual trigger for testing
+window.startTutorialManually = function() {
+    if (typeof tutorialTour !== 'undefined') {
+        localStorage.removeItem('tutorial_completed');
+        tutorialTour.start();
+    } else {
+        alert('Tutorial not loaded yet. Please refresh the page.');
+    }
+};
+
+console.log('Tutorial setup complete. Manual trigger available: startTutorialManually()');
+</script>
+</body>
+</html>
